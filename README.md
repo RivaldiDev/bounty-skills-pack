@@ -42,6 +42,8 @@ PowerShell:
 
 See [docs/INSTALL.md](docs/INSTALL.md) for the manual steps.
 
+If your harness cannot clone, read [FETCH.md](FETCH.md). It covers the GitHub API, raw file fetches, and [FILES.json](FILES.json) for enumeration.
+
 ## What is inside
 
 | Folder | What it is |
