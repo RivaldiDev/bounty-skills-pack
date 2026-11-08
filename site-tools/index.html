@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bounty Skills Pack</title>
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--fg:#e6edf3;--dim:#8b949e;--accent:#58a6ff;--green:#3fb950;--code-bg:#0b0f14}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+header{position:sticky;top:0;z-index:20;background:var(--panel);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{font-size:15px;margin:0;font-weight:600}
+header .meta{color:var(--dim);font-size:12px}
+#search{flex:1;min-width:220px;max-width:460px;padding:7px 11px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--fg);font-size:13px;outline:none}
+#search:focus{border-color:var(--accent)}
+.wrap{display:grid;grid-template-columns:320px 1fr;min-height:calc(100vh - 53px)}
+@media(max-width:860px){.wrap{grid-template-columns:1fr}#tree{max-height:40vh}}
+#tree{border-right:1px solid var(--border);background:var(--panel);overflow-y:auto;max-height:calc(100vh - 53px);padding:8px 0}
+.group{padding:10px 14px 4px;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);font-weight:600}
+.item{display:flex;align-items:baseline;gap:8px;padding:5px 14px 5px 20px;cursor:pointer;border-left:2px solid transparent;font-size:13px}
+.item:hover{background:rgba(88,166,255,.08)}
+.item.active{background:rgba(88,166,255,.14);border-left-color:var(--accent)}
+.item .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .sz{color:var(--dim);font-size:11px;font-variant-numeric:tabular-nums}
+.item .ext{font-size:10px;padding:1px 5px;border-radius:3px;background:var(--border);color:var(--dim)}
+#main{padding:22px 28px 80px;overflow-x:hidden}
+#main h2{font-size:20px;margin:0 0 4px;word-break:break-all}
+.pathbar{color:var(--dim);font-size:12px;margin-bottom:18px;word-break:break-all}
+.toolbar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.btn{padding:5px 11px;background:var(--panel);border:1px solid var(--border);border-radius:6px;color:var(--fg);cursor:pointer;font-size:12px}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.doc{max-width:900px}
+.doc h1{font-size:24px;border-bottom:1px solid var(--border);padding-bottom:8px}
+.doc h2{font-size:19px;border-bottom:1px solid var(--border);padding-bottom:6px;margin-top:28px}
+.doc h3{font-size:16px;margin-top:22px}
+.doc h4,.doc h5,.doc h6{font-size:14px;margin-top:18px}
+.doc p{margin:10px 0}
+.doc ul,.doc ol{margin:10px 0;padding-left:24px}
+.doc li{margin:4px 0}
+.doc hr{border:none;border-top:1px solid var(--border);margin:22px 0}
+.doc code{background:rgba(110,118,129,.25);padding:1px 5px;border-radius:4px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px}
+.doc pre.code{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;overflow-x:auto;position:relative}
+.doc pre.code code{background:none;padding:0;font-size:12.5px;line-height:1.5}
+.doc pre.code[data-lang]:not([data-lang=""])::before{content:attr(data-lang);position:absolute;top:6px;right:10px;font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
+.doc table{border-collapse:collapse;margin:14px 0;width:100%;font-size:13px;display:block;overflow-x:auto}
+.doc th,.doc td{border:1px solid var(--border);padding:7px 11px;text-align:left;vertical-align:top}
+.doc th{background:var(--panel);font-weight:600}
+.doc tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.raw{white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto}
+.empty{color:var(--dim);padding:40px 0}
+.hit{padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;background:var(--panel)}
+.hit:hover{border-color:var(--accent)}
+.hit .hp{font-weight:600;font-size:13px}
+.hit .hv{color:var(--dim);font-size:12px;margin-top:3px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.loading{color:var(--dim);padding:30px 0}
+.badge{font-size:11px;padding:2px 7px;border-radius:10px;background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.3)}
+</style>
+</head>
+<body>
+<header>
+<h1>Bounty Skills Pack</h1>
+<span class="meta" id="meta">loading</span>
+<input id="search" type="search" placeholder="Search files by path or content..." autocomplete="off">
+</header>
+<div class="wrap">
+<nav id="tree"><div class="loading">loading manifest...</div></nav>
+<main id="main"><div class="empty">Select a file from the tree.</div></main>
+</div>
+<script>
+const S={manifest:[],index:[],current:null,byId:{}};
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fmtSize(n){if(n<1024)return n+' B';if(n<1048576)return (n/1024).toFixed(1)+' KB';return (n/1048576).toFixed(2)+' MB'}
+function mdToHtml(md){
+var lines=md.replace(/\r\n/g,'\n').split('\n'),html=[],inCode=false,codeBuf=[],codeLang='',inTable=false,tableBuf=[],inList=false,listType='';
+function inline(t){var s=esc(t);s=s.replace(/`([^`]+)`/g,'<code>$1</code>');s=s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');s=s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');return s}
+function flushTable(){if(!tableBuf.length)return;var cells=tableBuf.map(function(r){return r.trim().replace(/^\||\|$/g,'').split('|').map(function(c){return c.trim()})});var head=cells[0],body=cells.slice(2);html.push('<table><thead><tr>'+head.map(function(c){return '<th>'+inline(c)+'</th>'}).join('')+'</tr></thead><tbody>');for(var i=0;i<body.length;i++){html.push('<tr>'+body[i].map(function(c){return '<td>'+inline(c)+'</td>'}).join('')+'</tr>')}html.push('</tbody></table>');tableBuf=[];inTable=false}
+function flushList(){if(inList){html.push('</'+listType+'>');inList=false}}
+for(var i=0;i<lines.length;i++){
+var line=lines[i];
+if(/^\s*```/.test(line)){if(!inCode){inCode=true;codeLang=line.replace(/^\s*```\s*/,'').trim();codeBuf=[]}else{inCode=false;html.push('<pre class="code" data-lang="'+esc(codeLang)+'"><code>'+esc(codeBuf.join('\n'))+'</code></pre>')}continue}
+if(inCode){codeBuf.push(line);continue}
+if(/^\s*\|/.test(line)&&line.indexOf('|')>-1){flushList();inTable=true;tableBuf.push(line);continue}
+else if(inTable){flushTable()}
+var h=line.match(/^(#{1,6})\s+(.*)$/);
+if(h){flushList();var l=h[1].length;html.push('<h'+l+'>'+inline(h[2])+'</h'+l+'>');continue}
+if(/^\s*([-*_])\1{2,}\s*$/.test(line)){flushList();html.push('<hr>');continue}
+var ul=line.match(/^\s*[-*+]\s+(.*)$/),ol=line.match(/^\s*\d+\.\s+(.*)$/);
+if(ul){if(!inList||listType!=='ul'){flushList();html.push('<ul>');inList=true;listType='ul'}html.push('<li>'+inline(ul[1])+'</li>');continue}
+if(ol){if(!inList||listType!=='ol'){flushList();html.push('<ol>');inList=true;listType='ol'}html.push('<li>'+inline(ol[1])+'</li>');continue}
+if(line.trim()===''){flushList();continue}
+flushList();html.push('<p>'+inline(line)+'</p>')}
+if(inCode)html.push('<pre class="code"><code>'+esc(codeBuf.join('\n'))+'</code></pre>');
+flushTable();flushList();return html.join('\n')}
+function buildTree(){
+var groups={},i;
+for(i=0;i<S.manifest.length;i++){var m=S.manifest[i];var top=m.path.indexOf('/')>-1?m.path.split('/')[0]:'(root)';(groups[top]=groups[top]||[]).push(m)}
+var order=['hunt-method','workflows','docs','skills','tether-hunt','scripts','(root)'];
+var keys=Object.keys(groups).sort(function(a,b){var ia=order.indexOf(a),ib=order.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b)});
+var html='';
+for(i=0;i<keys.length;i++){var k=keys[i];var items=groups[k].sort(function(a,b){return a.path.localeCompare(b.path)});
+html+='<div class="group">'+esc(k)+' <span style="opacity:.6">('+items.length+')</span></div>';
+for(var j=0;j<items.length;j++){var it=items[j];var nm=it.path.split('/').slice(1).join('/')||it.path;
+html+='<div class="item" data-id="'+it.id+'" title="'+esc(it.path)+'"><span class="nm">'+esc(nm)+'</span><span class="ext">'+esc(it.ext.replace('.','')||'file')+'</span><span class="sz">'+fmtSize(it.size)+'</span></div>'}}
+document.getElementById('tree').innerHTML=html;
+var els=document.querySelectorAll('.item');
+for(i=0;i<els.length;i++){(function(el){el.addEventListener('click',function(){openFile(el.dataset.id)})})(els[i])}}
+async function openFile(id){
+var els=document.querySelectorAll('.item');for(var i=0;i<els.length;i++){els[i].classList.toggle('active',els[i].dataset.id===id)}
+var m=S.byId[id],main=document.getElementById('main');
+main.innerHTML='<div class="loading">loading '+(m?esc(m.path):esc(id))+'...</div>';
+try{
+var res=await fetch('data/'+id+'.json');if(!res.ok)throw new Error('HTTP '+res.status);
+var rec=await res.json();S.current=rec;var isMd=rec.ext==='.md';
+var body=isMd?mdToHtml(rec.content):'<div class="raw">'+esc(rec.content)+'</div>';
+main.innerHTML='<h2>'+esc(rec.path.split('/').pop())+'</h2><div class="pathbar">'+esc(rec.path)+' &middot; '+fmtSize(rec.size)+'</div><div class="toolbar"><button class="btn" id="btn-copy">Copy raw</button><button class="btn" id="btn-raw">'+(isMd?'Show raw':'Show rendered')+'</button><button class="btn" id="btn-dl">Download</button></div><div class="doc" id="doc">'+body+'</div>';
+document.getElementById('btn-copy').onclick=function(){navigator.clipboard.writeText(S.current.content).then(function(){var b=document.getElementById('btn-copy');b.textContent='Copied';setTimeout(function(){b.textContent='Copy raw'},1200)})};
+document.getElementById('btn-dl').onclick=function(){var blob=new Blob([S.current.content],{type:'text/plain'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=S.current.path.split('/').pop();a.click();URL.revokeObjectURL(a.href)};
+document.getElementById('btn-raw').onclick=function(){var doc=document.getElementById('doc');var showingRaw=doc.dataset.raw==='1';if(showingRaw){doc.innerHTML=mdToHtml(S.current.content);doc.dataset.raw='0'}else{doc.innerHTML='<div class="raw">'+esc(S.current.content)+'</div>';doc.dataset.raw='1'}};
+window.scrollTo(0,0)
+}catch(e){main.innerHTML='<div class="empty">Could not load <code>'+esc(id)+'</code>: '+esc(e.message)+'</div>'}}
+var searchTimer=null;
+function runSearch(q){
+var main=document.getElementById('main');q=q.trim().toLowerCase();
+if(!q){main.innerHTML='<div class="empty">Select a file from the tree.</div>';return}
+var hits=[];
+for(var i=0;i<S.index.length;i++){var it=S.index[i],p=it.path.toLowerCase(),score=0;if(p.indexOf(q)>-1)score+=10;if(it.preview.toLowerCase().indexOf(q)>-1)score+=1;if(score>0)hits.push({it:it,score:score})}
+hits.sort(function(a,b){return b.score-a.score||a.it.path.localeCompare(b.it.path)});
+if(!hits.length){main.innerHTML='<div class="empty">No match for <b>'+esc(q)+'</b></div>';return}
+var html='<h2>'+hits.length+' result'+(hits.length===1?'':'s')+'</h2><div class="pathbar">for "'+esc(q)+'"</div>';
+for(var j=0;j<Math.min(hits.length,200);j++){var h=hits[j];html+='<div class="hit" data-id="'+h.it.id+'"><div class="hp">'+esc(h.it.path)+' <span class="badge">'+fmtSize(h.it.size)+'</span></div><div class="hv">'+esc(h.it.preview)+'</div></div>'}
+main.innerHTML=html;
+var els=document.querySelectorAll('.hit');for(var k=0;k<els.length;k++){(function(el){el.addEventListener('click',function(){document.getElementById('search').value='';openFile(el.dataset.id)})})(els[k])}}
+(async function boot(){
+try{
+var mres=await fetch('data/_manifest.json');S.manifest=await mres.json();
+for(var i=0;i<S.manifest.length;i++)S.byId[S.manifest[i].id]=S.manifest[i];
+buildTree();document.getElementById('meta').textContent=S.manifest.length+' files';
+try{var ires=await fetch('data/_index.json');S.index=await ires.json()}
+catch(e){S.index=S.manifest.map(function(m){return{id:m.id,path:m.path,size:m.size,preview:''}})}
+document.getElementById('search').addEventListener('input',function(ev){clearTimeout(searchTimer);searchTimer=setTimeout(function(){runSearch(ev.target.value)},180)})
+}catch(e){document.getElementById('tree').innerHTML='<div class="empty" style="padding:20px">Manifest failed: '+esc(e.message)+'</div>'}})();
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+# build artifacts
+site-tools/data/
+site-tools/out/
+**/out/
+**/cache/
+**/node_modules/
+**/lib/forge-std/
+**/lib/openzeppelin*/
+
+# local clones
+repos/
+
+# secrets
+*.env
+.env
+*.key
+*.pem
+creds/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Foundry
+broadcast/
